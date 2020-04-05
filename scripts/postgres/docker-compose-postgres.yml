@@ -1,0 +1,17 @@
+version: "3.0"
+
+services:
+
+  postgres.local:
+    container_name: "postgres11-alpine-lsn.local"
+    hostname: postgres
+    image: postgres:11-alpine
+    ports:
+      - "15433:5432"
+    environment:
+      POSTGRES_DB: lsn
+      POSTGRES_USER: lsn
+      POSTGRES_PASSWORD: 123
+    labels:
+      com.docker.stack.environment: dev
+      com.docker.stack.namespace: postgres.local
