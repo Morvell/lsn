@@ -1,16 +1,17 @@
 <template>
-    <div style="position: relative; width: 300px;">
+    <v-layout align-space-around justify-start column>
         <message-form :messages="messages" :messageAttr="message"/>
-        <message-row v-for="message in messages"
+        <message-row v-for="message in sortedMessages"
                      :key="message.id"
                      :message="message"
                      :editMessage="editMessage"
                      :deleteMessage="deleteMessage"
                      :messages="messages"/>
-    </div>
+    </v-layout>
 </template>
 
 <script>
+    import messagesApi from "api/messages";
     import MessageRow from 'components/messages/MessageRow.vue'
     import MessageForm from 'components/messages/MessageForm.vue'
 
@@ -25,12 +26,17 @@
                 message: null
             }
         },
+        computed: {
+            sortedMessages() {
+                return this.messages.sort((a, b) => -(a.id - b.id))
+            }
+        },
         methods: {
             editMessage(message) {
                 this.message = message
             },
             deleteMessage(message) {
-                this.$resource('/message{/id}').remove({id: message.id}).then(result => {
+                messagesApi.remove(message.id).then(result => {
                     if (result.ok) {
                         this.messages.splice(this.messages.indexOf(message), 1)
                     }
