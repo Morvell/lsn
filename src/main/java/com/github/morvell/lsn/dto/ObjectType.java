@@ -6,5 +6,6 @@ package com.github.morvell.lsn.dto;
  */
 public enum ObjectType {
 
-    MESSAGE;
+    MESSAGE,
+    COMMENT;
 }

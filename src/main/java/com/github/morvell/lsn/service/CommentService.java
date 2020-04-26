@@ -1,10 +1,16 @@
 package com.github.morvell.lsn.service;
 
+import java.util.function.BiConsumer;
+
 import org.springframework.stereotype.Service;
 
 import com.github.morvell.lsn.domain.Comment;
 import com.github.morvell.lsn.domain.User;
+import com.github.morvell.lsn.domain.Views;
+import com.github.morvell.lsn.dto.EventType;
+import com.github.morvell.lsn.dto.ObjectType;
 import com.github.morvell.lsn.repo.CommentRepository;
+import com.github.morvell.lsn.util.WsSender;
 
 /**
  * @author Андрей Захаров
@@ -13,16 +19,22 @@ import com.github.morvell.lsn.repo.CommentRepository;
 @Service
 public class CommentService {
 
-    private final CommentRepository commentRepository;
+    private final CommentRepository commentRepo;
 
-    public CommentService(CommentRepository commentRepository) {
+    private final BiConsumer<EventType, Comment> wsSender;
 
-        this.commentRepository = commentRepository;
+    public CommentService(CommentRepository commentRepo, WsSender wsSender) {
+
+        this.commentRepo = commentRepo;
+        this.wsSender = wsSender.getSender(ObjectType.COMMENT, Views.FullComment.class);
     }
 
     public Comment create(Comment comment, User user) {
-
         comment.setAuthor(user);
-        return commentRepository.save(comment);
+        Comment commentFromDb = commentRepo.save(comment);
+
+        wsSender.accept(EventType.CREATE, commentFromDb);
+
+        return commentFromDb;
     }
 }

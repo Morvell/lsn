@@ -1,8 +1,11 @@
 <template>
     <v-app>
-        <v-app-bar app>
-            <v-toolbar-title>Light Social Network</v-toolbar-title>
-            <v-btn flat v-if="profile" :disabled="$route.path === '/'" @click="showMessages">
+        <v-toolbar app>
+            <v-toolbar-title>Sarafan</v-toolbar-title>
+            <v-btn flat
+                   v-if="profile"
+                   :disabled="$route.path === '/'"
+                   @click="showMessages">
                 Messages
             </v-btn>
             <v-spacer></v-spacer>
@@ -15,7 +18,7 @@
             <v-btn v-if="profile" icon href="/logout">
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
-        </v-app-bar>
+        </v-toolbar>
         <v-content>
             <router-view></router-view>
         </v-content>
@@ -23,33 +26,46 @@
 </template>
 
 <script>
+    import {mapMutations, mapState} from 'vuex'
     import {addHandler} from 'util/ws'
-    import {mapMutations, mapState} from 'vuex';
 
     export default {
         computed: mapState(['profile']),
         methods: {
-            ...mapMutations(['addMessageMutation', 'updateMessageMutation', 'removeMessageMutation']),
+            ...mapMutations([
+                'addMessageMutation',
+                'updateMessageMutation',
+                'removeMessageMutation',
+                'addCommentMutation'
+            ]),
             showMessages() {
                 this.$router.push('/')
             },
             showProfile() {
                 this.$router.push('/profile')
-            },
+            }
         },
         created() {
             addHandler(data => {
                 if (data.objectType === 'MESSAGE') {
                     switch (data.eventType) {
                         case 'CREATE':
-                            this.addMessageMutation(data.body);
-                            break;
+                            this.addMessageMutation(data.body)
+                            break
                         case 'UPDATE':
-                            this.updateMessageMutation(data.body);
-                            break;
+                            this.updateMessageMutation(data.body)
+                            break
                         case 'REMOVE':
-                            this.removeMessageMutation(data.body);
-                            break;
+                            this.removeMessageMutation(data.body)
+                            break
+                        default:
+                            console.error(`Looks like the event type if unknown "${data.eventType}"`)
+                    }
+                } else if (data.objectType === 'COMMENT') {
+                    switch (data.eventType) {
+                        case 'CREATE':
+                            this.addCommentMutation(data.body)
+                            break
                         default:
                             console.error(`Looks like the event type if unknown "${data.eventType}"`)
                     }
