@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.morvell.lsn.domain.Message;
+import com.github.morvell.lsn.domain.User;
 import com.github.morvell.lsn.domain.Views;
 import com.github.morvell.lsn.dto.EventType;
 import com.github.morvell.lsn.dto.MetaDto;
@@ -65,9 +67,11 @@ public class MessageController {
     }
 
     @PostMapping
-    public Message create(@RequestBody Message message) throws IOException {
+    public Message create(@RequestBody Message message, @AuthenticationPrincipal User user)
+            throws IOException {
 
         fillMeta(message);
+        message.setAuthor(user);
         var save = messageRepository.save(message);
         wsSender.accept(EventType.CREATE, save);
         return save;
