@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import messagesApi from "api/messages"
+import messagesApi from 'api/messages'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
@@ -10,8 +10,7 @@ export default new Vuex.Store({
         profile: frontendData.profile
     },
     getters: {
-        sortedMessages: state =>
-            state.messages.sort((a, b) => -(a.id - b.id))
+        sortedMessages: state => (state.messages || []).sort((a, b) => -(a.id - b.id))
     },
     mutations: {
         addMessageMutation(state, message) {
@@ -42,31 +41,26 @@ export default new Vuex.Store({
     },
     actions: {
         async addMessageAction({commit, state}, message) {
-            const result = await messagesApi.add(message);
-            const data = await result.json();
+            const result = await messagesApi.add(message)
+            const data = await result.json()
             const index = state.messages.findIndex(item => item.id === data.id)
+
             if (index > -1) {
                 commit('updateMessageMutation', data)
             } else {
                 commit('addMessageMutation', data)
             }
-
-
         },
         async updateMessageAction({commit}, message) {
             const result = await messagesApi.update(message)
             const data = await result.json()
-            const index = this.messages.findIndex(item => item.id === data.id)
-            this.messages.splice(index, 1, data)
             commit('updateMessageMutation', data)
-
         },
         async removeMessageAction({commit}, message) {
             const result = await messagesApi.remove(message.id)
             if (result.ok) {
                 commit('removeMessageMutation', message)
             }
-
-        }
+        },
     }
 })
