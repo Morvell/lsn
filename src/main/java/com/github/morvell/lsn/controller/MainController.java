@@ -3,6 +3,8 @@ package com.github.morvell.lsn.controller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.morvell.lsn.domain.User;
 import com.github.morvell.lsn.domain.Views;
-import com.github.morvell.lsn.repo.MessageRepository;
+import com.github.morvell.lsn.dto.MessagePageDto;
+import com.github.morvell.lsn.service.MessageService;
 
 /**
  * @author Андрей Захаров
@@ -24,31 +27,38 @@ import com.github.morvell.lsn.repo.MessageRepository;
 @RequestMapping("/")
 public class MainController {
 
-    private final MessageRepository messageRepository;
+    private final MessageService messageService;
 
     @Value("${spring.profiles.active}")
     private String profile;
-
     private final ObjectWriter writer;
 
-    public MainController(MessageRepository messageRepository, ObjectMapper mapper) {
+    public MainController(MessageService messageService, ObjectMapper mapper) {
 
-        this.messageRepository = messageRepository;
-        writer = mapper.setConfig(mapper.getSerializationConfig())
+        this.messageService = messageService;
+
+        this.writer = mapper.setConfig(mapper.getSerializationConfig())
                 .writerWithView(Views.FullMessage.class);
     }
+
 
     @GetMapping
     public String main(Model model, @AuthenticationPrincipal User user)
             throws JsonProcessingException {
-
         HashMap<Object, Object> data = new HashMap<>();
 
         if (user != null) {
             data.put("profile", user);
 
-            String messages = writer.writeValueAsString(messageRepository.findAll());
+            Sort sort = Sort.by(Sort.Direction.DESC, "id");
+            PageRequest pageRequest = PageRequest.of(0, MessageController.MESSAGES_PER_PAGE, sort);
+            MessagePageDto messagePageDto = messageService.findAll(pageRequest);
+
+            String messages = writer.writeValueAsString(messagePageDto.getMessages());
+
             model.addAttribute("messages", messages);
+            data.put("currentPage", messagePageDto.getCurrentPage());
+            data.put("totalPages", messagePageDto.getTotalPages());
         } else {
             model.addAttribute("messages", "[]");
         }
