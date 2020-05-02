@@ -1,6 +1,9 @@
 <template>
     <v-card class="my-2">
         <v-card-text primary-title>
+            <user-link
+            :user="message.author"
+            size="48"></user-link>
             <div>
                 <v-avatar
                         v-if="message.author && message.author.userpic"
@@ -43,15 +46,11 @@
     import {mapActions} from 'vuex'
     import Media from 'components/media/Media.vue'
     import CommentList from '../comment/CommentList.vue'
+    import UserLink from "components/UserLink.vue";
 
     export default {
         props: ['message', 'editMessage'],
-        components: {CommentList, Media},
-        computed: {
-            authorName() {
-                return this.message.author ? this.message.author.name : 'unknown'
-            }
-        },
+        components: {UserLink, CommentList, Media},
         methods: {
             ...mapActions(['removeMessageAction']),
             edit() {

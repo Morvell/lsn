@@ -1,5 +1,8 @@
 package com.github.morvell.lsn.repo;
 
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.github.morvell.lsn.domain.User;
@@ -10,4 +13,6 @@ import com.github.morvell.lsn.domain.User;
  */
 public interface UserDetailsRepository extends JpaRepository<User, String> {
 
+    @EntityGraph(attributePaths = { "subscriptions", "subscribers" })
+    Optional<User> findById(String s);
 }
