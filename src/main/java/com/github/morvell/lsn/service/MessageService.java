@@ -2,9 +2,11 @@ package com.github.morvell.lsn.service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,12 +20,14 @@ import org.springframework.stereotype.Service;
 
 import com.github.morvell.lsn.domain.Message;
 import com.github.morvell.lsn.domain.User;
+import com.github.morvell.lsn.domain.UserSubscription;
 import com.github.morvell.lsn.domain.Views;
 import com.github.morvell.lsn.dto.EventType;
 import com.github.morvell.lsn.dto.MessagePageDto;
 import com.github.morvell.lsn.dto.MetaDto;
 import com.github.morvell.lsn.dto.ObjectType;
 import com.github.morvell.lsn.repo.MessageRepository;
+import com.github.morvell.lsn.repo.UserSubscriptionRepository;
 import com.github.morvell.lsn.util.WsSender;
 
 /**
@@ -43,12 +47,16 @@ public class MessageService {
 
     private final MessageRepository messageRepo;
 
+    private final UserSubscriptionRepository userSubscriptionRepo;
+
     private final BiConsumer<EventType, Message> wsSender;
 
     @Autowired
-    public MessageService(MessageRepository messageRepo, WsSender wsSender) {
+    public MessageService(MessageRepository messageRepo,
+            UserSubscriptionRepository userSubscriptionRepo, WsSender wsSender) {
 
         this.messageRepo = messageRepo;
+        this.userSubscriptionRepo = userSubscriptionRepo;
         this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.IdName.class);
     }
 
@@ -122,10 +130,20 @@ public class MessageService {
         return updatedMessage;
     }
 
-    public MessagePageDto findAll(Pageable pageable) {
+    public MessagePageDto findForUser(Pageable pageable, User user) {
+        List<User> channels = userSubscriptionRepo.findBySubscriber(user)
+                .stream()
+                .map(UserSubscription::getChannel)
+                .collect(Collectors.toList());
 
-        Page<Message> page = messageRepo.findAll(pageable);
-        return new MessagePageDto(page.getContent(), pageable.getPageNumber(),
-                page.getTotalPages());
+        channels.add(user);
+
+        Page<Message> page = messageRepo.findByAuthorIn(channels, pageable);
+
+        return new MessagePageDto(
+                page.getContent(),
+                pageable.getPageNumber(),
+                page.getTotalPages()
+        );
     }
 }
