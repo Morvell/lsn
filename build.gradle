@@ -32,6 +32,7 @@ repositories {
 }
 
 node {
+    version = 'v13.8.0'
     download = true
 }
 
