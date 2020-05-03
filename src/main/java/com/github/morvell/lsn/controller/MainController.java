@@ -65,13 +65,21 @@ public class MainController {
             PageRequest pageRequest = PageRequest.of(0, MessageController.MESSAGES_PER_PAGE, sort);
             MessagePageDto messagePageDto = messageService.findForUser(pageRequest, user);
 
+            var allMessagePage = messageService.findAll(pageRequest);
+
             String messages = messageWriter.writeValueAsString(messagePageDto.getMessages());
+            var allMessages = messageWriter.writeValueAsString(allMessagePage.getMessages());
 
             model.addAttribute("messages", messages);
+            model.addAttribute("allMessages", allMessages);
             data.put("currentPage", messagePageDto.getCurrentPage());
             data.put("totalPages", messagePageDto.getTotalPages());
+
+            data.put("currentAllPage", allMessagePage.getCurrentPage());
+            data.put("totalAllPage", allMessagePage.getTotalPages());
         } else {
             model.addAttribute("messages", "[]");
+            model.addAttribute("allMessages", "[]");
             model.addAttribute("profile", "null");
         }
 

@@ -130,6 +130,15 @@ public class MessageService {
         return updatedMessage;
     }
 
+    public MessagePageDto findAll(Pageable pageable) {
+        var page = messageRepo.findAll(pageable);
+        return new MessagePageDto(
+                page.getContent(),
+                pageable.getPageNumber(),
+                page.getTotalPages()
+        );
+    }
+
     public MessagePageDto findForUser(Pageable pageable, User user) {
         List<User> channels = userSubscriptionRepo.findBySubscriber(user)
                 .stream()

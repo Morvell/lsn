@@ -2,7 +2,7 @@
     <v-container>
         <v-layout justify-space-around>
             <v-list>
-                <v-list-tile
+                <v-list
                         v-for="item in subscriptions"
                 >
                     <user-link
@@ -15,7 +15,7 @@
                     >
                         {{item.active ? "Dismiss" : "Approve"}}
                     </v-btn>
-                </v-list-tile>
+                </v-list>
             </v-list>
         </v-layout>
     </v-container>

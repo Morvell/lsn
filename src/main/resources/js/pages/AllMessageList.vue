@@ -2,11 +2,11 @@
     <v-container>
         <v-layout align-space-around justify-start column>
             <message-form :messageAttr="message"/>
-            <message-row v-for="message in sortedMessages"
+            <message-row v-for="message in allMessages"
                          :key="message.id"
                          :message="message"
                          :editMessage="editMessage"/>
-            <lazy-loader></lazy-loader>
+            <all-lazy-loader></all-lazy-loader>
         </v-layout>
     </v-container>
 </template>
@@ -15,11 +15,11 @@
     import {mapGetters} from 'vuex'
     import MessageRow from 'components/messages/MessageRow.vue'
     import MessageForm from 'components/messages/MessageForm.vue'
-    import LazyLoader from "components/LazyLoader.vue";
+    import AllLazyLoader from "components/AllLazyLoader.vue";
 
     export default {
         components: {
-            LazyLoader,
+            AllLazyLoader,
             MessageRow,
             MessageForm
         },
@@ -28,7 +28,7 @@
                 message: null
             }
         },
-        computed: mapGetters(['sortedMessages']),
+        computed: mapGetters(['allMessages']),
         methods: {
             editMessage(message) {
                 this.message = message

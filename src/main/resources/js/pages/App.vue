@@ -10,9 +10,9 @@
             </v-btn>
             <v-btn class="ml-4"
                    v-if="profile"
-                   :disabled="$route.path === '/personal'"
-                   @click="showPersonalMessages">
-                Personal
+                   :disabled="$route.path === '/all'"
+                   @click="showAllMessages">
+                All
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
@@ -47,8 +47,8 @@
             showMessages() {
                 this.$router.push('/')
             },
-            showPersonalMessages() {
-                this.$router.push('/personal')
+            showAllMessages() {
+                this.$router.push('/all')
             },
             showProfile() {
                 this.$router.push('/user')
