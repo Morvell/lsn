@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -23,6 +24,7 @@ import lombok.ToString;
  */
 @Entity
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
 public class UserSubscription implements Serializable {

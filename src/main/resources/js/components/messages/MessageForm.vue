@@ -6,7 +6,7 @@
                 v-model="text"
                 @keyup.enter="save"
         />
-        <v-btn @click="save">
+        <v-btn class="ml-4" @click="save">
             Save
         </v-btn>
     </v-layout>
@@ -20,7 +20,7 @@
         data() {
             return {
                 text: '',
-                id: ''
+                id: null
             }
         },
         watch: {
@@ -42,7 +42,7 @@
                     this.addMessageAction(message);
                 }
                 this.text = ''
-                this.id = ''
+                this.id = null
             }
         }
     }

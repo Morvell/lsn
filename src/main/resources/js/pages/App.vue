@@ -1,15 +1,21 @@
 <template>
     <v-app>
-        <v-toolbar app>
-            <v-toolbar-title>Sarafan</v-toolbar-title>
-            <v-btn flat
+        <v-toolbar dark max-height="80px" height="80px">
+            <v-toolbar-title>Light Social Network</v-toolbar-title>
+            <v-btn class="ml-4"
                    v-if="profile"
                    :disabled="$route.path === '/'"
                    @click="showMessages">
                 Messages
             </v-btn>
+            <v-btn class="ml-4"
+                   v-if="profile"
+                   :disabled="$route.path === '/personal'"
+                   @click="showPersonalMessages">
+                Personal
+            </v-btn>
             <v-spacer></v-spacer>
-            <v-btn flat
+            <v-btn
                    v-if="profile"
                    :disabled="$route.path === '/user'"
                    @click="showProfile">
@@ -40,6 +46,9 @@
             ]),
             showMessages() {
                 this.$router.push('/')
+            },
+            showPersonalMessages() {
+                this.$router.push('/personal')
             },
             showProfile() {
                 this.$router.push('/user')
