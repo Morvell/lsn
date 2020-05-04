@@ -20,7 +20,7 @@ import com.github.morvell.lsn.service.MessageService;
  * @created 03/05/2020
  */
 @RestController
-@RequestMapping("all")
+@RequestMapping("allMessage")
 public class MessageAllController {
 
     public static final int MESSAGES_PER_PAGE = 3;
