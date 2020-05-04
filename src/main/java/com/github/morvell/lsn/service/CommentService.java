@@ -31,7 +31,7 @@ public class CommentService {
 
     public Comment create(Comment comment, User user) {
         comment.setAuthor(user);
-        Comment commentFromDb = commentRepo.save(comment);
+        var commentFromDb = commentRepo.save(comment);
 
         wsSender.accept(EventType.CREATE, commentFromDb);
 

@@ -29,45 +29,46 @@ import com.github.morvell.lsn.service.MessageService;
 public class MainController {
 
     private final MessageService messageService;
+
     private final UserDetailsRepository userDetailsRepo;
 
     @Value("${spring.profiles.active:prod}")
     private String profile;
+
     private final ObjectWriter messageWriter;
+
     private final ObjectWriter profileWriter;
 
-    public MainController(MessageService messageService, UserDetailsRepository userDetailsRepo, ObjectMapper mapper) {
+    public MainController(MessageService messageService, UserDetailsRepository userDetailsRepo,
+            ObjectMapper mapper) {
+
         this.messageService = messageService;
         this.userDetailsRepo = userDetailsRepo;
 
-        ObjectMapper objectMapper = mapper
-                .setConfig(mapper.getSerializationConfig());
+        var objectMapper = mapper.setConfig(mapper.getSerializationConfig());
 
-        this.messageWriter = objectMapper
-                .writerWithView(Views.FullMessage.class);
-        this.profileWriter = objectMapper
-                .writerWithView(Views.FullProfile.class);
+        this.messageWriter = objectMapper.writerWithView(Views.FullMessage.class);
+        this.profileWriter = objectMapper.writerWithView(Views.FullProfile.class);
     }
 
     @GetMapping
-    public String main(
-            Model model,
-            @AuthenticationPrincipal User user
-    ) throws JsonProcessingException {
+    public String main(Model model, @AuthenticationPrincipal User user)
+            throws JsonProcessingException {
+
         HashMap<Object, Object> data = new HashMap<>();
 
         if (user != null) {
-            User userFromDb = userDetailsRepo.findById(user.getId()).get();
-            String serializedProfile = profileWriter.writeValueAsString(userFromDb);
+            var userFromDb = userDetailsRepo.findById(user.getId()).get();
+            var serializedProfile = profileWriter.writeValueAsString(userFromDb);
             model.addAttribute("profile", serializedProfile);
 
-            Sort sort = Sort.by(Sort.Direction.DESC, "id");
-            PageRequest pageRequest = PageRequest.of(0, MessageController.MESSAGES_PER_PAGE, sort);
-            MessagePageDto messagePageDto = messageService.findForUser(pageRequest, user);
+            var sort = Sort.by(Sort.Direction.DESC, "id");
+            var pageRequest = PageRequest.of(0, MessageController.MESSAGES_PER_PAGE, sort);
+            var messagePageDto = messageService.findForUser(pageRequest, user);
 
             var allMessagePage = messageService.findAll(pageRequest);
 
-            String messages = messageWriter.writeValueAsString(messagePageDto.getMessages());
+            var messages = messageWriter.writeValueAsString(messagePageDto.getMessages());
             var allMessages = messageWriter.writeValueAsString(allMessagePage.getMessages());
 
             model.addAttribute("messages", messages);

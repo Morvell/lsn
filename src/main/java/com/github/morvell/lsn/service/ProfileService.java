@@ -29,7 +29,7 @@ public class ProfileService {
     }
 
     public User changeSubscription(User channel, User subscriber) {
-        List<UserSubscription> subcriptions = channel.getSubscribers()
+        var subcriptions = channel.getSubscribers()
                 .stream()
                 .filter(subscription ->
                         subscription.getSubscriber().equals(subscriber)
@@ -37,7 +37,7 @@ public class ProfileService {
                 .collect(Collectors.toList());
 
         if (subcriptions.isEmpty()) {
-            UserSubscription subscription = new UserSubscription(channel, subscriber);
+            var subscription = new UserSubscription(channel, subscriber);
             channel.getSubscribers().add(subscription);
         } else {
             channel.getSubscribers().removeAll(subcriptions);
@@ -51,7 +51,7 @@ public class ProfileService {
     }
 
     public UserSubscription changeSubscriptionStatus(User channel, User subscriber) {
-        UserSubscription subscription = userSubscriptionRepo.findByChannelAndSubscriber(channel, subscriber);
+        var subscription = userSubscriptionRepo.findByChannelAndSubscriber(channel, subscriber);
         subscription.setActive(!subscription.isActive());
 
         return userSubscriptionRepo.save(subscription);

@@ -62,11 +62,11 @@ public class MessageService {
 
     private void fillMeta(Message message) throws IOException {
 
-        String text = message.getText();
-        Matcher matcher = URL_REGEX.matcher(text);
+        var text = message.getText();
+        var matcher = URL_REGEX.matcher(text);
 
         if (matcher.find()) {
-            String url = text.substring(matcher.start(), matcher.end());
+            var url = text.substring(matcher.start(), matcher.end());
 
             matcher = IMG_REGEX.matcher(url);
 
@@ -86,11 +86,11 @@ public class MessageService {
 
     private MetaDto getMeta(String url) throws IOException {
 
-        Document doc = Jsoup.connect(url).get();
+        var doc = Jsoup.connect(url).get();
 
-        Elements title = doc.select("meta[name$=title],meta[property$=title]");
-        Elements description = doc.select("meta[name$=description],meta[property$=description]");
-        Elements cover = doc.select("meta[name$=image],meta[property$=image]");
+        var title = doc.select("meta[name$=title],meta[property$=title]");
+        var description = doc.select("meta[name$=description],meta[property$=description]");
+        var cover = doc.select("meta[name$=image],meta[property$=image]");
 
         return new MetaDto(getContent(title.first()), getContent(description.first()),
                 getContent(cover.first()));
@@ -111,7 +111,7 @@ public class MessageService {
 
         messageFromDb.setText(message.getText());
         fillMeta(messageFromDb);
-        Message updatedMessage = messageRepo.save(messageFromDb);
+        var updatedMessage = messageRepo.save(messageFromDb);
 
         wsSender.accept(EventType.UPDATE, updatedMessage);
 
@@ -123,7 +123,7 @@ public class MessageService {
         message.setCreationDate(LocalDateTime.now());
         fillMeta(message);
         message.setAuthor(user);
-        Message updatedMessage = messageRepo.save(message);
+        var updatedMessage = messageRepo.save(message);
 
         wsSender.accept(EventType.CREATE, updatedMessage);
 
